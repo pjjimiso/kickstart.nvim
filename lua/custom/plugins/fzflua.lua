@@ -20,5 +20,26 @@ return {
       end,
       desc = 'Find using grep in project directory',
     },
+    {
+      '<leader>fc',
+      function()
+        require('fzf-lua').files { cwd = vim.fn.stdpath 'config' }
+      end,
+      desc = 'Find in Neovim configuration directory',
+    },
+    {
+      '<leader>ft',
+      function()
+        require('fzf-lua').tmux_buffers()
+      end,
+      desc = 'Find in Tmux buffers',
+    },
+    {
+      '<leader>fb',
+      function()
+        require('fzf-lua').blines()
+      end,
+      desc = 'Find in current buffer',
+    },
   },
 }
