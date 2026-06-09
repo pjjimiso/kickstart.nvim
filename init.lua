@@ -1015,5 +1015,9 @@ require('lazy').setup({
   },
 })
 
+--- Folding modules
+--- Note: These don't return anything so they aren't really plugins, just some code for folding markdown headers
+require 'custom.markdown-folding'
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
