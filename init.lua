@@ -1019,5 +1019,21 @@ require('lazy').setup({
 --- Note: These don't return anything so they aren't really plugins, just some code for folding markdown headers
 require 'custom.markdown-folding'
 
+-- HACK to force nvim on wsl to choose win32yank over xclip
+if vim.fn.has('wsl') == 1 then
+  vim.g.clipboard = {
+    name = 'win32yank-wsl',
+    copy = {
+      ['+'] = 'win32yank.exe -i --crlf',
+      ['*'] = 'win32yank.exe -i --crlf',
+    },
+    paste = {
+      ['+'] = 'win32yank.exe -o --lf',
+      ['*'] = 'win32yank.exe -o --lf',
+    },
+    cache_enabled = 0,
+  }
+end
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
