@@ -462,6 +462,11 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[S]earch [N]eovim files' })
+
+      -- Shortcut for fuzzy-searching notes
+      vim.keymap.set('n', '<leader>so', function()
+        builtin.live_grep { cwd = vim.fn.expand '~/pj_notes' }
+      end, { desc = '[S]earch n[O]tes' })
     end,
   },
 
