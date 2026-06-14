@@ -1024,6 +1024,10 @@ require('lazy').setup({
 --- Note: These don't return anything so they aren't really plugins, just some code for folding markdown headers
 require 'custom.markdown-folding'
 
+--- Markdown task toggling: registers a buffer-local <M-x> (Alt+x) keymap in
+--- markdown files to mark tasks done/undone.
+require 'custom.markdown-tasks'
+
 -- HACK to force nvim on wsl to choose win32yank over xclip
 if vim.fn.has('wsl') == 1 then
   vim.g.clipboard = {
