@@ -208,6 +208,9 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- Use '-' to open the parent directory in a floating Oil menu
 vim.keymap.set('n', '-', '<cmd>Oil --float<CR>', { desc = 'Open Parent Directory in Oil' })
 
+-- Create task bullet: - [  ]
+vim.keymap.set('n', '<M-c>', 'i- [ ] <Esc>a', { desc = 'Create markdown task bullet' })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
