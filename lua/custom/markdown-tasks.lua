@@ -78,8 +78,8 @@ function M.toggle_done(opts)
   -- NOTE: Customize the completion label
   local label_done = 'done:'
   -- NOTE: Customize the timestamp format
-  local timestamp = os.date '%y%m%d-%H%M'
-  -- local timestamp = os.date("%y%m%d")
+  -- local timestamp = os.date '%y%m%d-%H%M'
+  local timestamp = ''
   -- NOTE: Customize the heading and its level
   local tasks_heading = '## Completed Tasks'
   local api = vim.api
