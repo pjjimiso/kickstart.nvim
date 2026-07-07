@@ -2,11 +2,13 @@ return {
   "zbirenbaum/copilot.lua",
   opts = {
     suggestion = {
-      enabled = not vim.g.ai_cmp,
+      enabled = true,
       auto_trigger = true,
-      hide_during_completion = vim.g.ai_cmp,
+      -- Hide the ghost text while the blink.cmp menu is open, so <Tab> is
+      -- unambiguous: it only accepts a Copilot suggestion when the menu is closed.
+      hide_during_completion = true,
       keymap = {
-        accept = false, -- handled by nvim-cmp / blink.cmp
+        accept = "<Tab>", -- accept the full (possibly multi-line) inline suggestion
         next = "<M-]>",
         prev = "<M-[>",
       },
