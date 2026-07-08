@@ -683,17 +683,12 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         copilot = { enabled = false },
-        -- clangd = {},
         gopls = {},
-        -- pyright = {},
+        pyright = {},
+        -- clangd = {},
         -- rust_analyzer = {},
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
+        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
 
         lua_ls = {
@@ -723,12 +718,21 @@ require('lazy').setup({
       -- `mason` had to be setup earlier: to configure its options see the
       -- `dependencies` table for `nvim-lspconfig` above.
       --
-      -- You can add other tools here that you want Mason to install
-      -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
-      })
+      -- lua-language-server and stylua come from Nix flake, not Mason
+      -- Tools that Mason builds from source (gopls) still work, so we only
+      -- need to exclude prebuilt ones (lua_ls).
+      -- Nix-provided LSP's go here:
+      local nix_provided = { 
+        lua_ls = true,
+        pyright = true
+      }
+      ensure_intalled = vim.tbl_filter(function(name)
+        return not nix_provided[name]
+      end, ensure_installed)
+      -- vim.list_extend(ensure_installed, {
+      --   'stylua', -- Used to format Lua code
+      -- })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
@@ -745,6 +749,15 @@ require('lazy').setup({
           end,
         },
       }
+
+      -- mason-lspconfig's handlers only run for Mason-installed servers, so the
+      -- ones provided by Nix above must be set up directly here
+      for name, _ in pairs(nix_provided) do
+        local server = servers[name] or {}
+        server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+        vim.lsp.config(name, server)
+        vim.lsp.enable(name)
+      end
     end,
   },
 
