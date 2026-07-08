@@ -682,7 +682,6 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        copilot = { enabled = false },
         gopls = {},
         pyright = {},
         -- clangd = {},
@@ -723,11 +722,11 @@ require('lazy').setup({
       -- Tools that Mason builds from source (gopls) still work, so we only
       -- need to exclude prebuilt ones (lua_ls).
       -- Nix-provided LSP's go here:
-      local nix_provided = { 
+      local nix_provided = {
         lua_ls = true,
-        pyright = true
+        pyright = true,
       }
-      ensure_intalled = vim.tbl_filter(function(name)
+      ensure_installed = vim.tbl_filter(function(name)
         return not nix_provided[name]
       end, ensure_installed)
       -- vim.list_extend(ensure_installed, {
@@ -801,9 +800,6 @@ require('lazy').setup({
       },
     },
   },
-
-  
-
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
@@ -929,7 +925,7 @@ require 'custom.markdown-folding'
 require 'custom.markdown-tasks'
 
 -- HACK to force nvim on wsl to choose win32yank over xclip
-if vim.fn.has('wsl') == 1 then
+if vim.fn.has 'wsl' == 1 then
   vim.g.clipboard = {
     name = 'win32yank-wsl',
     copy = {
@@ -943,7 +939,6 @@ if vim.fn.has('wsl') == 1 then
     cache_enabled = 0,
   }
 end
-
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
