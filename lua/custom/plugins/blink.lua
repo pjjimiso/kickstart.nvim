@@ -29,6 +29,7 @@ return {
       opts = {},
     },
     'folke/lazydev.nvim',
+    'fang2hou/blink-copilot',
   },
   --- @module 'blink.cmp'
   --- @type blink.cmp.Config
@@ -44,27 +45,31 @@ return {
       -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
       --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
     },
-
     appearance = {
       nerd_font_variant = 'mono',
     },
-
     completion = {
-      -- By default, you may press `<c-space>` to show the documentation.
-      documentation = { auto_show = false, auto_show_delay_ms = 500 },
-    },
-
-    sources = {
-      default = { 'lsp', 'path', 'snippets', 'lazydev' },
-      providers = {
-        lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
+      documentation = { auto_show = true, auto_show_delay_ms = 500 },
+      ghost_text = {
+        enabled = true,
+        show_with_selection = true,
+        show_without_selection = true, -- preview the top item before you press <C-n>
       },
     },
-
+    sources = {
+      default = { 'copilot', 'lsp', 'path', 'snippets', 'lazydev' },
+      providers = {
+        lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
+        copilot = {
+          name = 'copilot',
+          module = 'blink-copilot',
+          score_offset = 100,
+          async = true,
+        },
+      },
+    },
     snippets = { preset = 'luasnip' },
-
     fuzzy = { implementation = 'lua' },
-
     -- Shows a signature help window while you type arguments for a function
     signature = { enabled = true },
   },
