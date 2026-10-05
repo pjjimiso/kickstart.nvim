@@ -63,6 +63,10 @@ end
 
 return {
   'CopilotC-Nvim/CopilotChat.nvim',
+  -- Work-only (enterprise tenant), and deprecated even there.
+  cond = function()
+    return require('custom.machine').is_work()
+  end,
   dependencies = {
     'zbirenbaum/copilot.lua',
     { 'nvim-lua/plenary.nvim', branch = 'master' },

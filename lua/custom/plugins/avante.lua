@@ -1,5 +1,9 @@
 -- avante.nvim — enterprise Copilot + Claude Max (via ACP)
 --
+-- MACHINE SPLIT (custom.machine): on the work box the default provider is the GHE
+-- copilot tenant; on the personal laptop it's claude-code (ACP -> claude CLI on the
+-- personal Claude subscription) and all the enterprise-token plumbing is skipped.
+--
 -- 1. copilot — avante already has correct GHE Cloud support: providers/copilot.lua
 --    derives the token-exchange URL from `endpoint`, so intel-foundry.ghe.com yields
 --    https://api.intel-foundry.ghe.com/copilot_internal/v2/token. What it CANNOT do is
@@ -52,12 +56,14 @@ return {
   },
 
   -- Runs at startup so :CopilotEnterpriseLogin exists before avante itself loads.
+  -- Registered on every machine, not just detected-work ones: running it on a fresh
+  -- work box is what flips custom.machine's detection to 'work' (via the token cache).
   init = function()
     require('custom.copilot_enterprise').setup()
   end,
 
   config = function()
-    local copilot_enterprise = require 'custom.copilot_enterprise'
+    local is_work = require('custom.machine').is_work()
 
     -- ~/.npm-global/bin only reaches PATH in a fresh login shell (home-manager
     -- sessionPath), so resolve the ACP adapter up front and fall back to its known
@@ -100,24 +106,28 @@ return {
     end
 
     -- Publish the cached enterprise token as hosts.json before avante's copilot
-    -- provider goes looking for it. No-ops when already in sync.
-    if not copilot_enterprise.sync() then
+    -- provider goes looking for it. No-ops when already in sync. Work machine only —
+    -- the personal laptop has no GHE tenant to talk to.
+    if is_work and not require('custom.copilot_enterprise').sync() then
       vim.notify('avante: no enterprise Copilot token — run :CopilotEnterpriseLogin', vim.log.levels.WARN)
     end
 
     require('avante').setup {
-      provider = 'copilot',
+      -- Work: GHE Copilot. Personal: claude CLI over ACP (Max subscription).
+      provider = is_work and 'copilot' or 'claude-code',
 
       providers = {
-        copilot = {
+        -- Enterprise copilot config only exists on the work machine, so a stray
+        -- :AvanteSwitchProvider copilot on the laptop can't half-work.
+        copilot = is_work and {
           -- Drives _get_chat_auth_url() -> https://api.intel-foundry.ghe.com/copilot_internal/v2/token.
           -- If the tenant turns out to exchange on api.github.com instead (EMU routing),
           -- delete this line — the default endpoint routes there. avante commits to one
           -- host with no fallback, so this is the knob to flip if auth fails.
-          endpoint = 'https://' .. copilot_enterprise.host,
+          endpoint = 'https://' .. require('custom.copilot_enterprise').host,
           model = 'claude-sonnet-5',
           -- proxy/allow_insecure intentionally unset: env https_proxy covers all paths.
-        },
+        } or nil,
 
         -- Native Anthropic API provider. Not the active Claude path (ACP is, below), but
         -- pinned to Opus 5 so :AvanteSwitchProvider claude does the right thing.
